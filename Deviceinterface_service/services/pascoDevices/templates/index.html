@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Real-time Data Graph using D3.js</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+      svg g .line {
+        fill: none;
+        stroke: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <svg width="500" height="300"></svg>
+    <script>
+      const data = [
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 2, y: 0 },
+      ];
+
+      // Define the SVG element and margins
+      const svg = d3.select("svg");
+      const margin = { top: 20, right: 20, bottom: 30, left: 50 };
+      const width = +svg.attr("width") - margin.left - margin.right;
+      const height = +svg.attr("height") - margin.top - margin.bottom;
+      const g = svg
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      // Define the scales and axes
+      const x = d3.scaleLinear().range([0, width]);
+      const y = d3.scaleLinear().range([height, 0]);
+      const xAxis = d3.axisBottom(x);
+      const yAxis = d3.axisLeft(y);
+
+      // Set the domain for the scales
+      x.domain(d3.extent(data, (d) => d.x));
+      y.domain([0, d3.max(data, (d) => d.y)]);
+
+      // Add the axes to the SVG element
+      g.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+      g.append("g")
+        .attr("class", "axis axis--y")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", "0.71em")
+        .attr("text-anchor", "end")
+        .text("Value");
+
+      // Define the line generator
+      const line = d3
+        .line()
+        .x((d) => x(d.x))
+        .y((d) => y(d.y));
+
+      // Add the line to the SVG element
+      const path = g
+        .append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", line);
+
+      // Define the update function
+      function update() {
+        // Generate a new data point
+        fetch("http://127.0.0.1:5000/data")
+          .then((response) => response.json())
+          .then((data1) => {
+            let newData = {
+              x: data[data.length - 1].x + 1,
+              y: data1.value,
+            };
+
+            // Add the new data point to the data array
+            data.push(newData);
+
+            // Remove the oldest data point if the array is too long
+            if (data.length > 10) {
+              data.shift();
+            }
+            // Update the scales and axes
+            x.domain(d3.extent(data, (d) => d.x));
+            y.domain([0, d3.max(data, (d) => d.y)]);
+
+            // Redraw the x-axis
+            g.select(".axis--x").transition().duration(500).call(xAxis);
+
+            // Redraw the y-axis
+            g.select(".axis--y").transition().duration(500).call(yAxis);
+
+            // Redraw the line
+            path.datum(data).transition().duration(500).attr("d", line);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+
+      // Call the update function every second
+      setInterval(update, 3500);
+    </script>
+  </body>
+</html>
