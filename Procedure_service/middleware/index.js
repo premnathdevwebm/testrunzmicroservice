@@ -1,6 +1,6 @@
 const firebaseAdmin = require("../services/firebase");
 
-const User = require("../models/User");
+const ProcedureUser = require("../models/User");
 
 async function isAuthenticatedProcedure(req, res, next) {
   try {
