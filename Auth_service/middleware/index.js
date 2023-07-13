@@ -26,7 +26,6 @@ async function isAuthenticated(req, res, next) {
   }
 }
 
-
 const commonRole = (req, res, next) => {
   try {
     const role = req.user.role;

@@ -15,7 +15,6 @@ eventEmitter.on("userinfo", async (data) => {
   const amqpCtl = await connectMessageQue();
 
   amqpCtl.sendToQueue(process.env.RABBIT_MQ_PROCEDURE, Buffer.from(sendingData, 'utf-8'));
-  amqpCtl.sendToQueue(process.env.RABBIT_MQ_EXPERIMENT, Buffer.from(sendingData, 'utf-8'));
 
   /* 
   amqpCtl.sendToQueue(process.env.RABBIT_MQ_MOREINFO, Buffer.from(sendingData, 'utf-8'));
@@ -56,6 +55,7 @@ const register = async (req, res) => {
       email,
       password,
     });
+    const token = await firebaseAdmin.auth.createCustomToken(newFirebaseUser.uid);
     if (newFirebaseUser) {
       await User.create({
         email,
@@ -66,7 +66,7 @@ const register = async (req, res) => {
     }
     return res
       .status(200)
-      .json({ success: "Account created successfully. Please sign in." });
+      .json({ success: "Account created successfully. Please sign in.", token });
   } catch (err) {
     if (err.code === "auth/email-already-exists") {
       return res
