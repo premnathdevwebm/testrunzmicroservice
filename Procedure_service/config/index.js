@@ -33,6 +33,7 @@ async function connectMessageQue() {
     channel = await connection.createChannel();
     await channel.assertQueue(process.env.RABBIT_MQ_PROCEDURE);
     channel.consume(process.env.RABBIT_MQ_PROCEDURE, async (msg) => {
+      console.log(JSON.parse(msg.content.toString()));
       if (msg !== null) {
         const data = JSON.parse(msg.content.toString());
         const user = await User.find({ userId: data.id, email: data.email });
