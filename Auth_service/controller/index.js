@@ -13,9 +13,7 @@ eventEmitter.on("userinfo", async (data) => {
     role: data.role,
   });
   const amqpCtl = await connectMessageQue();
-
   amqpCtl.sendToQueue(process.env.RABBIT_MQ_PROCEDURE, Buffer.from(sendingData, 'utf-8'));
-
   /* 
   amqpCtl.sendToQueue(process.env.RABBIT_MQ_MOREINFO, Buffer.from(sendingData, 'utf-8'));
   amqpCtl.sendToQueue(process.env.RABBIT_MQ_PROCEDURE, Buffer.from(sendingData, 'utf-8'));
@@ -55,7 +53,6 @@ const register = async (req, res) => {
       email,
       password,
     });
-    const token = await firebaseAdmin.auth.createCustomToken(newFirebaseUser.uid);
     if (newFirebaseUser) {
       await User.create({
         email,
@@ -66,7 +63,7 @@ const register = async (req, res) => {
     }
     return res
       .status(200)
-      .json({ success: "Account created successfully. Please sign in.", token });
+      .json({ success: "Account created successfully. Please sign in." });
   } catch (err) {
     if (err.code === "auth/email-already-exists") {
       return res
@@ -95,4 +92,57 @@ const firebaseGoogleSignin = async (req, res) => {
   }
 };
 
-module.exports = { validate, register, firebaseGoogleSignin };
+const firebaseMicrosoftSignin = async (req, res) => {
+  const { email, name, uid, timeZone } = req.body;
+  const filter = { email: email };
+  const update = {
+    $setOnInsert: { name: name, timeZone: timeZone, firebaseId: uid },
+  };
+  const options = { upsert: true };
+  try {
+    await User.updateOne(filter, update, options);
+    return res.status(200).json({
+      success: "Microsoft Account logged successfully. Please sign in.",
+    });
+  } catch (err) {
+    console.log(err.code);
+    return res.status(500).json({ error: "Server error. Please try again" });
+  }
+};
+
+const firebaseLinkedInSignin = async (req, res) => {
+  const { email, name, uid, timeZone } = req.body;
+  const filter = { email: email };
+  const update = {
+    $setOnInsert: { name: name, timeZone: timeZone, firebaseId: uid },
+  };
+  const options = { upsert: true };
+  try {
+    await User.updateOne(filter, update, options);
+    return res.status(200).json({
+      success: "Linkedin Account logged successfully. Please sign in.",
+    });
+  } catch (err) {
+    console.log(err.code);
+    return res.status(500).json({ error: "Server error. Please try again" });
+  }
+};
+
+const findAllUser = async (req, res) => {
+  try {
+    const users = await User.find({});
+    return res.json([...users]);
+  } catch (err) {
+    console.log(err.code);
+    return res.status(500).json({ error: "Server error. Please try again" });
+  }
+};
+
+module.exports = {
+  validate,
+  register,
+  firebaseGoogleSignin,
+  firebaseMicrosoftSignin,
+  firebaseLinkedInSignin,
+  findAllUser,
+};
