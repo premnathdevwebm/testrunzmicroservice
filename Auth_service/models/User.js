@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const moment = require('moment-timezone');
+const moment = require("moment-timezone");
 
 //const data = require("../seed/users.json")
 
@@ -24,19 +24,30 @@ const UserSchema = new Schema({
     type: String,
     default: "Asia/Calcutta",
   },
+  firstuse: { type: Boolean, default: true },
   role: {
     type: String,
-    enum: ["superadmin", "regionaladmin", "collegeorinstitueadmin", "labadmin", "teacher", "student", "requester", "tester", "admin"],
+    enum: [
+      "superadmin",
+      "regionaladmin",
+      "collegeorinstitueadmin",
+      "labadmin",
+      "teacher",
+      "student",
+      "requester",
+      "tester",
+      "admin",
+    ],
     default: "tester",
   },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 });
 
-UserSchema.virtual('createdAtWithTZ').get(function() {
+UserSchema.virtual("createdAtWithTZ").get(function () {
   return moment(this.createdAt).tz(this.timeZone).format();
 });
-UserSchema.virtual('updatedAtWithTZ').get(function() {
+UserSchema.virtual("updatedAtWithTZ").get(function () {
   return moment(this.updated_at).tz(this.timeZone).format();
 });
 

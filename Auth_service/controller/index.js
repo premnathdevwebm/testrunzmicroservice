@@ -13,7 +13,10 @@ eventEmitter.on("userinfo", async (data) => {
     role: data.role,
   });
   const amqpCtl = await connectMessageQue();
-  amqpCtl.sendToQueue(process.env.RABBIT_MQ_PROCEDURE, Buffer.from(sendingData, 'utf-8'));
+  amqpCtl.sendToQueue(
+    process.env.RABBIT_MQ_PROCEDURE,
+    Buffer.from(sendingData, "utf-8")
+  );
   /* 
   amqpCtl.sendToQueue(process.env.RABBIT_MQ_MOREINFO, Buffer.from(sendingData, 'utf-8'));
   amqpCtl.sendToQueue(process.env.RABBIT_MQ_PROCEDURE, Buffer.from(sendingData, 'utf-8'));
@@ -38,6 +41,22 @@ eventEmitter.on("userinfo", async (data) => {
 const validate = async (req, res) => {
   eventEmitter.emit("userinfo", req.user);
   res.status(200).json(req.user);
+};
+
+const updateValueMiddleware = async (req, res, next) => {
+  const { email } = req.user;
+  const filter = { email: email };
+  const update = { $set: { firstuse: false } }
+  try {
+    await User.updateOne(filter, update)
+    return res.status(200).send("Updated successfully");
+  } catch (err) {
+    console.log(err.code);
+    return res.status(500).json({ error: "Server error. Please try again" });
+  }
+  
+  //firstuse
+  
 };
 
 const register = async (req, res) => {
@@ -140,6 +159,7 @@ const findAllUser = async (req, res) => {
 
 module.exports = {
   validate,
+  updateValueMiddleware,
   register,
   firebaseGoogleSignin,
   firebaseMicrosoftSignin,
