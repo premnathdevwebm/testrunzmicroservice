@@ -6,14 +6,30 @@ const moment = require("moment-timezone");
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
+  activeStatus: {
+    type: Boolean,
+    default: true,
+  },
+  imageUrl: {
+    type: String,
+  },
   name: {
     type: String,
     required: true,
+  },
+  firstname: {
+    type: String
+  },
+  lastname: {
+    type: String
   },
   email: {
     type: String,
     required: true,
     unique: true,
+  },
+  mobile: {
+    type: String
   },
   firebaseId: {
     type: String,

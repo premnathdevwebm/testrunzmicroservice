@@ -1,6 +1,7 @@
 const EventEmitter = require("events");
 const firebaseAdmin = require("../services/firebase");
 const User = require("../models/User");
+const Setting = require("../models/Setting");
 const { connectMessageQue, purgeMessageQue } = require("../config");
 
 const eventEmitter = new EventEmitter();
@@ -160,6 +161,45 @@ const findAllUser = async (req, res) => {
   }
 };
 
+const initiateSetting = async(req, res)=>{
+  try {
+    await Setting.create({organizationId: req.body.organizationId})
+    return res.send("Setting initiated");
+  } catch (err) {
+    console.log(err.code);
+    return res.status(500).json({ error: "Server error. Please try again" });
+  }
+}
+
+const findSetting = async(req, res)=>{
+  try {
+    const result = await Setting.find({organizationId: req.query.organizationId})
+    return res.json(result);
+  } catch (err) {
+    console.log(err.code);
+    return res.status(500).json({ error: "Server error. Please try again" });
+  }
+}
+
+const updateSetting = async(req, res)=>{
+  try {
+    const {organizationId} = req.params;
+    const {notification, roleSetting} = req.body
+    const filter = { organizationId: organizationId };
+    const update = {
+      $set: {
+        notification,
+        roleSetting,
+      },
+    }
+    const result = await Setting.updateOne(filter, update)
+    return res.json(result);
+  } catch (err) {
+    console.log(err.code);
+    return res.status(500).json({ error: "Server error. Please try again" });
+  }
+}
+
 module.exports = {
   validate,
   updateValueMiddleware,
@@ -168,4 +208,7 @@ module.exports = {
   firebaseMicrosoftSignin,
   firebaseLinkedInSignin,
   findAllUser,
+  initiateSetting,
+  findSetting,
+  updateSetting
 };
