@@ -17,6 +17,10 @@ eventEmitter.on("userinfo", async (data) => {
     process.env.RABBIT_MQ_PROCEDURE,
     Buffer.from(sendingData, "utf-8")
   );
+  amqpCtl.sendToQueue(
+    process.env.RABBIT_MQ_MOREINFO,
+    Buffer.from(sendingData, "utf-8")
+  );
   /* 
   amqpCtl.sendToQueue(process.env.RABBIT_MQ_MOREINFO, Buffer.from(sendingData, 'utf-8'));
   amqpCtl.sendToQueue(process.env.RABBIT_MQ_PROCEDURE, Buffer.from(sendingData, 'utf-8'));
@@ -46,17 +50,16 @@ const validate = async (req, res) => {
 const updateValueMiddleware = async (req, res, next) => {
   const { email } = req.user;
   const filter = { email: email };
-  const update = { $set: { firstuse: false } }
+  const update = { $set: { firstuse: false } };
   try {
-    await User.updateOne(filter, update)
+    await User.updateOne(filter, update);
     return res.status(200).send("Updated successfully");
   } catch (err) {
     console.log(err.code);
     return res.status(500).json({ error: "Server error. Please try again" });
   }
-  
+
   //firstuse
-  
 };
 
 const register = async (req, res) => {

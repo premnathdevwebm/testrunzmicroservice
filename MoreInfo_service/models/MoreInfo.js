@@ -22,10 +22,7 @@ const MoreInfoSchema = new Schema(
     role: {
       type: String,
     },
-    university: {
-      type: String,
-    },
-    institute: {
+    organization: {
       type: String,
     },
     department: {
@@ -36,16 +33,6 @@ const MoreInfoSchema = new Schema(
     },
     country: {
       type: String,
-    },
-    year: {
-      type: Number,
-    },
-    semester: {
-      type: Number,
-    },
-    showOnce:{
-      type: Boolean,
-      default: false,
     },
     labtype: {
       type: [String],
