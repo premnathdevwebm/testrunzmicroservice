@@ -9,7 +9,7 @@ const MoreInfoContentSchema = new Schema(
       type: String,
     },
     department: {
-      type: String,
+      type: [String],
     },
     labtype: {
       type: [String],
