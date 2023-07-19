@@ -1,4 +1,5 @@
 const MoreInfo = require("../models/MoreInfo");
+const MoreInfoContent = require("../models/MoreInfoContent");
 
 const findAllInfo = async (req, res) => {
   try {
@@ -73,4 +74,15 @@ const removeLabs = async (req, res) => {
   }
 };
 
-module.exports = { findAllInfo, findInfo, updateInfo, addLabs, removeLabs };
+const createInfo = async (req, res) => {
+  try {
+    const data = req.body;
+    await MoreInfoContent.create({...data})
+    res.status(200).send("moreinfoContent added successfully");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("system error");
+  }
+}
+
+module.exports = { findAllInfo, findInfo, updateInfo, addLabs, removeLabs, createInfo };
