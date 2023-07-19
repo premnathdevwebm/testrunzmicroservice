@@ -85,4 +85,14 @@ const createInfo = async (req, res) => {
   }
 }
 
-module.exports = { findAllInfo, findInfo, updateInfo, addLabs, removeLabs, createInfo };
+const listmoreinfoContent = async (req, res)=>{
+  try {
+    const result = await MoreInfoContent.find({})
+    res.status(200).json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("system error");
+  }
+}
+
+module.exports = { findAllInfo, findInfo, updateInfo, addLabs, removeLabs, createInfo, listmoreinfoContent };
