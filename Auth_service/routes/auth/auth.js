@@ -21,4 +21,5 @@ router.post("/setting", isAuthenticated, adminRole, initiateSetting)
 router.get("/setting", isAuthenticated, adminRole, findSetting)
 router.patch("/setting/:organizationId", isAuthenticated, updateSetting)
 
+
 module.exports = router;
