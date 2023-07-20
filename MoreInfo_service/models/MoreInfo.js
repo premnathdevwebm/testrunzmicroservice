@@ -7,18 +7,31 @@ const MoreInfoSchema = new Schema(
   {
     userId: {
       type: String,
-      required: true,
-      unique: true,
+    },
+    activeStatus: {
+      type: Boolean,
+      default: true,
+    },
+    imageUrl: {
+      type: String,
+      default: ""
     },
     name: {
       type: String,
-      required: true,
+      default: ""
+    },
+    firstname: {
+      type: String
+    },
+    lastname: {
+      type: String
     },
     email: {
       type: String,
-      required: true,
-      unique: true,
     },
+    mobile: {
+      type: String
+    },  
     role: {
       type: String,
     },
