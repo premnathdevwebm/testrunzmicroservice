@@ -1,11 +1,15 @@
 const { Router } = require("express");
-
-const { validate, updateValueMiddleware, register, firebaseGoogleSignin, firebaseMicrosoftSignin, firebaseLinkedInSignin, findAllUser, initiateSetting, findSetting, updateSetting } = require("../../controller");
+const multer  = require("multer")
+const { validate, updateValueMiddleware, register, firebaseGoogleSignin, firebaseMicrosoftSignin, firebaseLinkedInSignin, findAllUser, initiateSetting, findSetting, updateSetting, uploadimage } = require("../../controller");
 
 const { isAuthenticated, commonRole, requesterOrAdminRole, adminRole } = require("../../middleware");
 
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
+
 const router = new Router();
 
+router.post("/upload", upload.single('image'), uploadimage)
 router.post("/auth/register", register);
 router.post("/auth/googlelogin", firebaseGoogleSignin);
 router.post("/auth/microsoftlogin", firebaseMicrosoftSignin);

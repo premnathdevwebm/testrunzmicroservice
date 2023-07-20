@@ -1,5 +1,7 @@
 const EventEmitter = require("events");
+const sharp = require("sharp")
 const firebaseAdmin = require("../services/firebase");
+const {uploadFile, getObjectSignedUrl} = require("../services/upload")
 const User = require("../models/User");
 const Setting = require("../models/Setting");
 const { connectMessageQue, purgeMessageQue } = require("../config");
@@ -200,6 +202,24 @@ const updateSetting = async(req, res)=>{
   }
 }
 
+const uploadimage = async(req, res)=>{
+  try {
+    const file = req.file;
+    const fileBuffer = await sharp(file.buffer)
+    .resize({ height: 1920, width: 1080, fit: "contain" })
+    .toBuffer()
+    const imageName = file.originalname
+    await uploadFile(fileBuffer, imageName, file.mimetype)
+    const imageUrl = await getObjectSignedUrl(imageName)
+    res.json({imageUrl})
+  } catch (err) {
+    
+    console.log(err);
+    return res.status(500).json({ error: "Server error. Please try again" });
+    
+  }
+}
+
 module.exports = {
   validate,
   updateValueMiddleware,
@@ -210,5 +230,6 @@ module.exports = {
   findAllUser,
   initiateSetting,
   findSetting,
-  updateSetting
+  updateSetting,
+  uploadimage
 };
