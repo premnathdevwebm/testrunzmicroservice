@@ -9,9 +9,9 @@ const {
   listmoreinfoContent
 } = require("../../controller");
 const { isAuthenticatedMoreInfo, commonRole } = require("../../middleware");
-
 const router = new Router();
-
+router.post("/moreinfocreate", createInfo);
+router.get("/moreinfo/list", listmoreinfoContent);
 router.get("/moreinfo", isAuthenticatedMoreInfo, commonRole, findAllInfo);
 router.get("/moreinfo/user", isAuthenticatedMoreInfo, commonRole, findInfo);
 router.patch("/moreinfo", isAuthenticatedMoreInfo, commonRole, updateInfo);
@@ -22,7 +22,6 @@ router.patch(
   commonRole,
   removeLabs
 );
-router.post("/moreinfo", createInfo);
-router.get("/moreinfo/list", listmoreinfoContent);
+
 
 module.exports = router;

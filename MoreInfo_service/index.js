@@ -12,6 +12,7 @@ const {
 } = require("./middleware");
 
 function bootstrap() {
+  
   const app = express();
   app.use(cors());
   app.use(compression());

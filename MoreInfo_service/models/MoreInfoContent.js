@@ -9,10 +9,10 @@ const MoreInfoContentSchema = new Schema(
       type: String,
     },
     department: {
-      type: [String],
+      type: Schema.Types.Mixed,
     },
     labtype: {
-      type: [String],
+      type: Schema.Types.Mixed,
     },
   },
   { timestamps: true }
