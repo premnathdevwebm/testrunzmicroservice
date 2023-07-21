@@ -36,10 +36,10 @@ const MoreInfoSchema = new Schema(
       type: String,
     },
     organization: {
-      type: String,
+      type: Schema.Types.Mixed,
     },
     department: {
-      type: String,
+      type: Schema.Types.Mixed,
     },
     state: {
       type: String,
@@ -48,7 +48,7 @@ const MoreInfoSchema = new Schema(
       type: String,
     },
     labtype: {
-      type: [String],
+      type: Schema.Types.Mixed,
     },
   },
   { timestamps: true }

@@ -53,7 +53,7 @@ const validate = async (req, res) => {
 const updateValueMiddleware = async (req, res, next) => {
   const { email } = req.user;
   const filter = { email: email };
-  const update = { $set: { firstuse: false } };
+  const update = { $set: { ...req.body } };
   try {
     await User.updateOne(filter, update);
     return res.status(200).send("Updated successfully");
