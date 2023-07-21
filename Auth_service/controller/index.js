@@ -165,7 +165,7 @@ const findAllUser = async (req, res) => {
 
 const initiateSetting = async(req, res)=>{
   try {
-    await Setting.create({organizationId: req.body.organizationId})
+    await Setting.create({organizationId: req.params.organizationId})
     return res.send("Setting initiated");
   } catch (err) {
     console.log(err.code);
@@ -175,7 +175,7 @@ const initiateSetting = async(req, res)=>{
 
 const findSetting = async(req, res)=>{
   try {
-    const result = await Setting.find({organizationId: req.query.organizationId})
+    const result = await Setting.find({organizationId: req.params.organizationId})
     return res.json(result);
   } catch (err) {
     console.log(err.code);
