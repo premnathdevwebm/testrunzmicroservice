@@ -42,6 +42,9 @@ async function connectMessageQue() {
             name: data.name,
             email: data.email,
             role: data.role,
+            organization: data.organization,
+            department: [data.department],
+            labtype: [data.laboratory],
           },
           { upsert: true, new: true }
         );

@@ -14,6 +14,10 @@ eventEmitter.on("userinfo", async (data) => {
     name: data.name,
     email: data.email,
     role: data.role,
+    organization: "Organisation 1",
+    department: "Department 1",
+    laboratory: "Lab 1"
+
   });
   const amqpCtl = await connectMessageQue();
   amqpCtl.sendToQueue(
