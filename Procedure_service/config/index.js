@@ -39,9 +39,13 @@ async function connectMessageQue() {
         if (!user.length) {
           const newUser = new User({
             userId: data.id,
+            userCounter: data.counter,
             name: data.name,
             email: data.email,
             role: data.role,
+            organization: data.organization,
+            department: [data.department],
+            labtype: [data.laboratory],
           });
           newUser.save();
         }

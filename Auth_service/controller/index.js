@@ -6,6 +6,10 @@ const User = require("../models/User");
 const Setting = require("../models/Setting");
 const { connectMessageQue, purgeMessageQue } = require("../config");
 
+function padNumber(num) {
+  return num.toString().padStart(5, "0");
+}
+
 const eventEmitter = new EventEmitter();
 
 eventEmitter.on("userinfo", async (data) => {
@@ -16,8 +20,8 @@ eventEmitter.on("userinfo", async (data) => {
     role: data.role,
     organization: "Organisation 1",
     department: "Department 1",
-    laboratory: "Lab 1"
-
+    laboratory: "Lab 1",
+    counter: padNumber(data.counter.value)
   });
   const amqpCtl = await connectMessageQue();
   amqpCtl.sendToQueue(

@@ -39,6 +39,7 @@ async function connectMessageQue() {
           { userId: data.id, email: data.email },
           {
             userId: data.id,
+            userCounter: data.counter,
             name: data.name,
             email: data.email,
             role: data.role,
