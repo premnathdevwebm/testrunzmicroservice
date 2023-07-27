@@ -221,7 +221,6 @@ module.exports = {
   firebaseGoogleSignin,
   firebaseMicrosoftSignin,
   firebaseLinkedInSignin,
-  findAllUser,
   initiateSetting,
   findSetting,
   updateSetting,
