@@ -1,9 +1,18 @@
 const mongoose = require("mongoose");
 const moment = require("moment-timezone");
 
-//const data = require("../seed/users.json")
+function padNumber(num) {
+  return num.toString().padStart(5, "0");
+}
 
 const { Schema } = mongoose;
+
+const counterSchema = new Schema({
+  _id: { type: String, required: true },
+  value: { type: Number, default: 0 },
+});
+
+const Counter = mongoose.model("Counter", counterSchema);
 
 const UserSchema = new Schema({
   activeStatus: {
@@ -12,17 +21,17 @@ const UserSchema = new Schema({
   },
   imageUrl: {
     type: String,
-    default: ""
+    default: "",
   },
   name: {
     type: String,
     required: true,
   },
   firstname: {
-    type: String
+    type: String,
   },
   lastname: {
-    type: String
+    type: String,
   },
   email: {
     type: String,
@@ -30,7 +39,7 @@ const UserSchema = new Schema({
     unique: true,
   },
   mobile: {
-    type: String
+    type: String,
   },
   firebaseId: {
     type: String,
@@ -57,6 +66,10 @@ const UserSchema = new Schema({
     ],
     default: "tester",
   },
+  counter: {
+    type: counterSchema,
+    default: { _id: "userCounter", value: 0 },
+  },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 });
@@ -68,6 +81,24 @@ UserSchema.virtual("updatedAtWithTZ").get(function () {
   return moment(this.updated_at).tz(this.timeZone).format();
 });
 
-module.exports = User = mongoose.model("user", UserSchema);
+UserSchema.pre("save", async function (next) {
+  try {
+    if (!this.isNew) {
+      return next();
+    }
 
-//User.insertMany(data)
+    const counter = await Counter.findByIdAndUpdate(
+      { _id: "userCounter" },
+      { $inc: { value: 1 } },
+      { new: true, upsert: true }
+    );
+
+    this.counter = { ...counter.toObject(), value: padNumber(counter.value) };
+
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+module.exports = User = mongoose.model("user", UserSchema);

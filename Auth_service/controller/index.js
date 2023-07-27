@@ -157,16 +157,6 @@ const firebaseLinkedInSignin = async (req, res) => {
   }
 };
 
-const findAllUser = async (req, res) => {
-  try {
-    const users = await User.find({});
-    return res.json([...users]);
-  } catch (err) {
-    console.log(err.code);
-    return res.status(500).json({ error: "Server error. Please try again" });
-  }
-};
-
 const initiateSetting = async(req, res)=>{
   try {
     await Setting.create({organizationId: req.params.organizationId})

@@ -10,6 +10,6 @@ const ProcedureSchema = new Schema({
     type: String,
     required: true
   },
-});
+},  { timestamps: true });
 
 module.exports = Procedure = mongoose.model("procedure", ProcedureSchema);
