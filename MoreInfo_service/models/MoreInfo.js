@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 //const data = require("../seed/moreinfos.json")
 
 const MoreInfoSchema = new Schema(
-  {
+    {
     userId: {
       type: String,
     },

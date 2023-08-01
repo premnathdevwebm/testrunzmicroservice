@@ -58,6 +58,19 @@ const updateStatus = async(req, res)=>{
   }
 }
 
+const disableBulkUsers = async(req, res)=>{
+  try {
+    const {ids} = req.body
+    await MoreInfo.updateMany(
+      { userId: { $in: ids } },
+      { $set: { activeStatus: false } }
+    )
+    res.status(200).json("Bulk Disable done");
+  } catch (err) {
+    res.status(500).send("system error");
+  }
+}
+
 const addLabs = async (req, res) => {
   try {
     const { userId, email } = req.user;
@@ -113,4 +126,4 @@ const listmoreinfoContent = async (req, res)=>{
   }
 }
 
-module.exports = { findAllInfo, findInfo, updateInfo, updateStatus, addLabs, removeLabs, createInfo, listmoreinfoContent };
+module.exports = { findAllInfo, findInfo, updateInfo, updateStatus, disableBulkUsers, addLabs, removeLabs, createInfo, listmoreinfoContent };
