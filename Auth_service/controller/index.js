@@ -56,6 +56,20 @@ eventEmitter.on("userinfo", async (data) => {
  */
 });
 
+eventEmitter.on("removeuser",  async (data) => {
+  const sendingData = JSON.stringify({
+    id: data._id.toString(),
+    activeStatus: false,
+  })
+  console.log(sendingData);
+  const amqpCtl = await connectMessageQue();
+  amqpCtl.sendToQueue(
+    process.env.RABBIT_MQ_MOREINFO,
+    Buffer.from(sendingData, "utf-8")
+  );
+
+} )
+
 const validate = async (req, res) => {
   eventEmitter.emit("userinfo", req.user);
   res.status(200).json(req.user);
@@ -152,6 +166,9 @@ const removeUser = async(req, res)=>{
   try {
     const uuid = req.user.userId
     const response = await firebaseAdmin.auth.updateUser(uuid, {disabled: true})
+    if(response){
+      eventEmitter.emit("removeuser", req.user);
+    }
     return res
     .status(200)
     .json({ success:"user disabled successfully"})
