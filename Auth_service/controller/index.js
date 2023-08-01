@@ -148,6 +148,19 @@ const createUser = async(req, res)=>{
   }
 }
 
+const removeUser = async(req, res)=>{
+  try {
+    const uuid = req.user.userId
+    const response = await firebaseAdmin.auth.updateUser(uuid, {disabled: true})
+    return res
+    .status(200)
+    .json({ success:"user disabled successfully"})
+  } catch (err) {
+    return res.status(500).json({ error: "Server error. Please try again" });
+  }
+  
+}
+
 const firebaseGoogleSignin = async (req, res) => {
   const { email, name, uid, timeZone } = req.body;
   const filter = { email: email };
@@ -267,6 +280,7 @@ module.exports = {
   firebaseGoogleSignin,
   firebaseMicrosoftSignin,
   firebaseLinkedInSignin,
+  removeUser,
   initiateSetting,
   findSetting,
   updateSetting,
