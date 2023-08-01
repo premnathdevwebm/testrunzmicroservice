@@ -3,10 +3,11 @@ const {
   findAllInfo,
   findInfo,
   updateInfo,
+  updateStatus,
   addLabs,
   removeLabs,
   createInfo,
-  listmoreinfoContent
+  listmoreinfoContent,
 } = require("../../controller");
 const { isAuthenticatedMoreInfo, commonRole } = require("../../middleware");
 const router = new Router();
@@ -15,6 +16,7 @@ router.get("/moreinfo/list", listmoreinfoContent);
 router.get("/moreinfo", isAuthenticatedMoreInfo, commonRole, findAllInfo);
 router.get("/moreinfo/user", isAuthenticatedMoreInfo, commonRole, findInfo);
 router.patch("/moreinfo", isAuthenticatedMoreInfo, commonRole, updateInfo);
+router.patch("/moreinfo/:id", isAuthenticatedMoreInfo, updateStatus);
 router.patch("/moreinfo/addlabs", isAuthenticatedMoreInfo, commonRole, addLabs);
 router.patch(
   "/moreinfo/removelabs",
@@ -22,6 +24,5 @@ router.patch(
   commonRole,
   removeLabs
 );
-
 
 module.exports = router;

@@ -40,6 +40,24 @@ const updateInfo = async (req, res) => {
   }
 };
 
+
+const updateStatus = async(req, res)=>{
+  try {
+    const {id} = req.params
+    const data = req.body;
+    const result = await MoreInfo.findOneAndUpdate(
+      { userId: id },
+      {
+        ...data,
+      },
+      { new: true }
+    ).lean();
+    res.status(200).json({ ...result });
+  } catch (err) {
+    res.status(500).send("system error");
+  }
+}
+
 const addLabs = async (req, res) => {
   try {
     const { userId, email } = req.user;
@@ -95,4 +113,4 @@ const listmoreinfoContent = async (req, res)=>{
   }
 }
 
-module.exports = { findAllInfo, findInfo, updateInfo, addLabs, removeLabs, createInfo, listmoreinfoContent };
+module.exports = { findAllInfo, findInfo, updateInfo, updateStatus, addLabs, removeLabs, createInfo, listmoreinfoContent };
