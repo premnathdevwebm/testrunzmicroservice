@@ -5,6 +5,9 @@ const {uploadFile, getObjectSignedUrl} = require("../services/upload")
 const User = require("../models/User");
 const Setting = require("../models/Setting");
 const { connectMessageQue, purgeMessageQue } = require("../config");
+const generateRandomPassword = require("../services/randomPass");
+const mailing = require("../services/mailing");
+
 
 function padNumber(num) {
   return num.toString().padStart(5, "0");
@@ -106,6 +109,44 @@ const register = async (req, res) => {
     return res.status(500).json({ error: "Server error. Please try again" });
   }
 };
+
+const createUser = async(req, res)=>{
+  try {
+    const {email, name, timeZone} = req.body
+    const password = generateRandomPassword(12);
+    const msg = {
+      to: email,
+      from: 'testrunz.learny@gmail.com',
+      subject: 'Testrunz User created',
+      text: 'An account is created in testrunz you can play around as guset user',
+      html: `<strong>this is your password: ${password}</strong>`,
+    }
+   
+    const newFirebaseUser = await firebaseAdmin.auth.createUser({
+      email,
+      password,
+    });
+    if (newFirebaseUser) {
+      await User.create({
+        email,
+        name,
+        firebaseId: newFirebaseUser.uid,
+        timeZone,
+      });
+      await mailing(msg)
+    }
+    return res
+      .status(200)
+      .json({ success: "Account created successfully. Please check your mail for password." });
+  } catch (err) {
+    if (err.code === "auth/email-already-exists") {
+      return res
+        .status(400)
+        .json({ error: "User account already exists at email address." });
+    }
+    return res.status(500).json({ error: "Server error. Please try again" });
+  }
+}
 
 const firebaseGoogleSignin = async (req, res) => {
   const { email, name, uid, timeZone } = req.body;
@@ -222,6 +263,7 @@ module.exports = {
   validate,
   updateValueMiddleware,
   register,
+  createUser,
   firebaseGoogleSignin,
   firebaseMicrosoftSignin,
   firebaseLinkedInSignin,
