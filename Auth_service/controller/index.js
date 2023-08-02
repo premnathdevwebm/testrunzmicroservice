@@ -54,23 +54,6 @@ eventEmitter.on("adduser", async (data) => {
   );
 });
 
-eventEmitter.on("removeuser", async (data) => {
-  const sendingData = JSON.stringify({
-    type: "removeuser",
-    ...data,
-    activeStatus: false,
-  });
-  const amqpCtl = await connectMessageQue();
-  amqpCtl.sendToQueue(
-    process.env.RABBIT_MQ_MOREINFO,
-    Buffer.from(sendingData, "utf-8")
-  );
-  amqpCtl.sendToQueue(
-    process.env.RABBIT_MQ_PROCEDURE,
-    Buffer.from(sendingData, "utf-8")
-  );
-});
-
 const validate = async (req, res) => {
   eventEmitter.emit("userinfo", req.user);
   res.status(200).json(req.user);
@@ -197,12 +180,9 @@ const createUser = async (req, res) => {
 const removeUser = async (req, res) => {
   try {
     const uuid = req.user.userId;
-    const response = await firebaseAdmin.auth.updateUser(uuid, {
+     await firebaseAdmin.auth.updateUser(uuid, {
       disabled: true,
     });
-    if (response) {
-      eventEmitter.emit("removeuser", { type: "removeuser", ...req.user });
-    }
     return res.status(200).json({ success: "user disabled successfully" });
   } catch (err) {
     return res.status(500).json({ error: "Server error. Please try again" });
