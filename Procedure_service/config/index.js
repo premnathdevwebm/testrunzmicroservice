@@ -35,7 +35,7 @@ async function connectMessageQue() {
     channel.consume(process.env.RABBIT_MQ_PROCEDURE, async (msg) => {
       if (msg !== null) {
         const data = JSON.parse(msg.content.toString());
-        await MoreInfo.findOneAndUpdate(
+        await User.findOneAndUpdate(
           { userId: data.id, email: data.email },
           {
             userId: data.id,

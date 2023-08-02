@@ -26,12 +26,13 @@ eventEmitter.on("userinfo", async (data) => {
     counter: padNumber(data.counter.value),
   });
   const amqpCtl = await connectMessageQue();
+
   amqpCtl.sendToQueue(
-    process.env.RABBIT_MQ_PROCEDURE,
+    process.env.RABBIT_MQ_MOREINFO,
     Buffer.from(sendingData, "utf-8")
   );
   amqpCtl.sendToQueue(
-    process.env.RABBIT_MQ_MOREINFO,
+    process.env.RABBIT_MQ_PROCEDURE,
     Buffer.from(sendingData, "utf-8")
   );
   /* 
@@ -170,7 +171,7 @@ const createUser = async (req, res) => {
         firstname,
         lastname,
         role,
-        activeStatus
+        activeStatus,
       });
       await mailing(msg);
       eventEmitter.emit("adduser", {
@@ -185,7 +186,7 @@ const createUser = async (req, res) => {
         activeStatus,
         labtype,
         organization,
-        department
+        department,
       });
     }
     return res.status(200).json({
@@ -209,7 +210,7 @@ const removeUser = async (req, res) => {
       disabled: true,
     });
     if (response) {
-      eventEmitter.emit("removeuser", {type: "removeuser",...req.user});
+      eventEmitter.emit("removeuser", { type: "removeuser", ...req.user });
     }
     return res.status(200).json({ success: "user disabled successfully" });
   } catch (err) {
