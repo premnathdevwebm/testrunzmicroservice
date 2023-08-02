@@ -29,8 +29,8 @@ const listAllProcedureAssociate = async (req, res) => {
     const user = await User.findOne({ userId: req.user.userId });
     const ids = user.procedureIds.map(async (ele) => {
       const tempId = ele.toString();
-      const { title } = await Procedure.findOne({ _id: tempId });
-      return { id: tempId, title };
+      const { title, createdBy, createdAt } = await Procedure.findOne({ _id: tempId });
+      return { id: tempId, title, createdBy, createdAt };
     });
     Promise.all(ids)
       .then((data) => {
