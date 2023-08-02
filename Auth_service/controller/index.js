@@ -35,31 +35,12 @@ eventEmitter.on("userinfo", async (data) => {
     process.env.RABBIT_MQ_PROCEDURE,
     Buffer.from(sendingData, "utf-8")
   );
-  /* 
-  amqpCtl.sendToQueue(process.env.RABBIT_MQ_MOREINFO, Buffer.from(sendingData, 'utf-8'));
-  amqpCtl.sendToQueue(process.env.RABBIT_MQ_PROCEDURE, Buffer.from(sendingData, 'utf-8'));
-  amqpCtl.sendToQueue(process.env.RABBIT_MQ_EXPERIMENT, Buffer.from(sendingData, 'utf-8'));
-  amqpCtl.sendToQueue(process.env.RABBIT_MQ_RUNPYTHON, Buffer.from(sendingData, 'utf-8'));
-  amqpCtl.sendToQueue(process.env.RABBIT_MQ_NOTES, Buffer.from(sendingData, 'utf-8'));
-  amqpCtl.sendToQueue(process.env.RABBIT_MQ_FEEDBACK, Buffer.from(sendingData, 'utf-8'));
-  amqpCtl.sendToQueue(process.env.RABBIT_MQ_INVENTORY, Buffer.from(sendingData, 'utf-8'));
-  amqpCtl.sendToQueue(process.env.RABBIT_MQ_CODEEDITOR, Buffer.from(sendingData, 'utf-8'));
-  amqpCtl.sendToQueue(process.env.RABBIT_MQ_CHART, Buffer.from(sendingData, 'utf-8'));
- */
-  /* 
- await purgeMessageQue(process.env.RABBIT_MQ_MOREINFO)
- await purgeMessageQue(process.env.RABBIT_MQ_PROCEDURE)
- await purgeMessageQue(process.env.RABBIT_MQ_EXPERIMENT)
- await purgeMessageQue(process.env.RABBIT_MQ_RUNPYTHON)
- await purgeMessageQue(process.env.RABBIT_MQ_INVENTORY)
- await purgeMessageQue(process.env.RABBIT_MQ_CODEEDITOR)
- */
+  
 });
 
 eventEmitter.on("adduser", async (data) => {
   const sendingData = JSON.stringify({
     type: "createuser",
-    id: data._id.toString(),
     ...data
   });
   const amqpCtl = await connectMessageQue();
@@ -76,7 +57,6 @@ eventEmitter.on("adduser", async (data) => {
 eventEmitter.on("removeuser", async (data) => {
   const sendingData = JSON.stringify({
     type: "removeuser",
-    id: data._id.toString(),
     ...data,
     activeStatus: false,
   });
