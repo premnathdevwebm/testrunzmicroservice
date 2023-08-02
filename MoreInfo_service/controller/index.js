@@ -6,36 +6,36 @@ const findAllInfo = async (req, res) => {
     const { department, labtype, organization, role, activeStatus, createdAt } =
       req.query;
     const filterCriteria = {
-      $or: [],
+      $and: [],
     };
 
     if (department) {
-      filterCriteria.$or.push({ department: { $in: [department] } });
+      filterCriteria.$and.push({ department: { $in: [department] } });
     }
 
     if (labtype) {
-      filterCriteria.$or.push({ labtype: { $in: [labtype] } });
+      filterCriteria.$and.push({ labtype: { $in: [labtype] } });
     }
 
     if (organization) {
-      filterCriteria.$or.push({ organization: organization });
+      filterCriteria.$and.push({ organization: organization });
     }
 
     if (role) {
-      filterCriteria.$or.push({ role: role });
+      filterCriteria.$and.push({ role: role });
     }
 
     if (activeStatus) {
-      filterCriteria.$or.push({ activeStatus: activeStatus });
+      filterCriteria.$and.push({ activeStatus: activeStatus });
     }
 
     if (createdAt && Date.parse(createdAt)) {
-      filterCriteria.$or.push({ createdAt: { $gte: new Date(createdAt) } });
+      filterCriteria.$and.push({ createdAt: { $gte: new Date(createdAt) } });
     }
 
     if (req.user) {
       let result = [];
-      if (filterCriteria.$or.length > 0) {
+      if (filterCriteria.$and.length > 0) {
         result = await MoreInfo.find(filterCriteria);
       } else {
         result = await MoreInfo.find();
