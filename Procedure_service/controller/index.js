@@ -14,6 +14,15 @@ const createProcedure = async (req, res) => {
   }
 };
 
+const duplicateProcedure = async(req, res)=>{
+  try {
+    return res.status(200).send("Duplicate created");
+  } catch (err) {
+    return res.status(500).json({ error: "Server error. Please try again" });
+
+  }
+}
+
 const listAllProcedureAssociate = async (req, res) => {
   try {
     const user = await User.findOne({ userId: req.user.userId });
@@ -74,6 +83,7 @@ const deleteprocedureById = async (req, res) => {
 };
 module.exports = {
   createProcedure,
+  duplicateProcedure,
   listAllProcedureAssociate,
   procedureById,
   procedureByTitle,
