@@ -3,10 +3,10 @@ const MoreInfoContent = require("../models/MoreInfoContent");
 
 const findAllInfo = async (req, res) => {
   try {
-    const { department, labtype, organization, role, activeStatus, createdAt } = req.query;
-
+    const { department, labtype, organization, role, activeStatus, createdAt } =
+      req.query;
     const filterCriteria = {
-      $or: []
+      $or: [],
     };
 
     if (department) {
