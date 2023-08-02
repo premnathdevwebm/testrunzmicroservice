@@ -58,7 +58,26 @@ eventEmitter.on("userinfo", async (data) => {
 
 eventEmitter.on("adduser", async (data) => {
   const sendingData = JSON.stringify({
+    type: "createuser",
     id: data._id.toString(),
+    ...data
+  });
+  const amqpCtl = await connectMessageQue();
+  amqpCtl.sendToQueue(
+    process.env.RABBIT_MQ_MOREINFO,
+    Buffer.from(sendingData, "utf-8")
+  );
+  amqpCtl.sendToQueue(
+    process.env.RABBIT_MQ_PROCEDURE,
+    Buffer.from(sendingData, "utf-8")
+  );
+});
+
+eventEmitter.on("removeuser", async (data) => {
+  const sendingData = JSON.stringify({
+    type: "removeuser",
+    id: data._id.toString(),
+    ...data,
     activeStatus: false,
   });
   const amqpCtl = await connectMessageQue();
@@ -66,17 +85,8 @@ eventEmitter.on("adduser", async (data) => {
     process.env.RABBIT_MQ_MOREINFO,
     Buffer.from(sendingData, "utf-8")
   );
-});
-
-eventEmitter.on("removeuser", async (data) => {
-  const sendingData = JSON.stringify({
-    id: data._id.toString(),
-    activeStatus: false,
-  });
-  console.log(sendingData);
-  const amqpCtl = await connectMessageQue();
   amqpCtl.sendToQueue(
-    process.env.RABBIT_MQ_MOREINFO,
+    process.env.RABBIT_MQ_PROCEDURE,
     Buffer.from(sendingData, "utf-8")
   );
 });
@@ -163,7 +173,7 @@ const createUser = async (req, res) => {
       password,
     });
     if (newFirebaseUser) {
-      await User.create({
+      const newUser = await User.create({
         email,
         name,
         firebaseId: newFirebaseUser.uid,
@@ -178,7 +188,8 @@ const createUser = async (req, res) => {
         type: "createuser",
         email,
         name,
-        firebaseId: newFirebaseUser.uid,
+        userId: newFirebaseUser.uid,
+        userCounter: newUser.counter.value,
         timeZone,
         firstname,
         lastname,
