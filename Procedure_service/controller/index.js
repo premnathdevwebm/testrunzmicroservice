@@ -17,8 +17,13 @@ const createProcedure = async (req, res) => {
 
 const duplicateProcedure = async(req, res)=>{
   try {
+    const {id} = req.body
+    const {title, html, createdBy} = await Procedure.find({_id: id})
+    const procedure = new Procedure({ title, html, createdBy });
+    await procedure.save();
     return res.status(200).send("Duplicate created");
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ error: "Server error. Please try again" });
 
   }
