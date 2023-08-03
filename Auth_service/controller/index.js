@@ -13,35 +13,52 @@ function padNumber(num) {
 }
 
 const eventEmitter = new EventEmitter();
-
-eventEmitter.on("userinfo", async (data) => {
-  const sendingData = JSON.stringify({
-    id: data._id.toString(),
-    name: data.name,
-    email: data.email,
-    role: data.role,
-    organization: "Organisation 1",
-    department: "Department 1",
-    laboratory: "Lab 1",
-    counter: padNumber(data.counter.value),
+const emitEvent = (eventName, data) => {
+  return new Promise((resolve, reject) => {
+    eventEmitter.emit(eventName, data, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(result);
+      }
+    });
   });
-  const amqpCtl = await connectMessageQue();
+};
 
-  amqpCtl.sendToQueue(
-    process.env.RABBIT_MQ_MOREINFO,
-    Buffer.from(sendingData, "utf-8")
-  );
-  amqpCtl.sendToQueue(
-    process.env.RABBIT_MQ_PROCEDURE,
-    Buffer.from(sendingData, "utf-8")
-  );
-  
+eventEmitter.on("userinfo", async (data, callback) => {
+  try {
+    const sendingData = JSON.stringify({
+      id: data._id.toString(),
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      organization: "Organisation 1",
+      department: "Department 1",
+      laboratory: "Lab 1",
+      counter: padNumber(data.counter.value),
+    });
+    const amqpCtl = await connectMessageQue();
+
+    amqpCtl.sendToQueue(
+      process.env.RABBIT_MQ_MOREINFO,
+      Buffer.from(sendingData, "utf-8")
+    );
+    amqpCtl.sendToQueue(
+      process.env.RABBIT_MQ_PROCEDURE,
+      Buffer.from(sendingData, "utf-8")
+    );
+
+    callback(null, "Event handled successfully");
+  } catch (error) {
+    callback(error);
+  }
 });
 
-eventEmitter.on("adduser", async (data) => {
+eventEmitter.on("adduser", async (data, callback) => {
+  try {
   const sendingData = JSON.stringify({
     type: "createuser",
-    ...data
+    ...data,
   });
   const amqpCtl = await connectMessageQue();
   amqpCtl.sendToQueue(
@@ -52,10 +69,14 @@ eventEmitter.on("adduser", async (data) => {
     process.env.RABBIT_MQ_PROCEDURE,
     Buffer.from(sendingData, "utf-8")
   );
+  callback(null, "Event handled successfully");
+} catch (error) {
+  callback(error);
+}
 });
 
 const validate = async (req, res) => {
-  eventEmitter.emit("userinfo", req.user);
+  await emitEvent("userinfo", req.user);
   res.status(200).json(req.user);
 };
 
@@ -147,7 +168,7 @@ const createUser = async (req, res) => {
         activeStatus,
       });
       await mailing(msg);
-      eventEmitter.emit("adduser", {
+      await emitEvent("adduser", {
         type: "createuser",
         email,
         name,
@@ -180,7 +201,7 @@ const createUser = async (req, res) => {
 const removeUser = async (req, res) => {
   try {
     const uuid = req.user.userId;
-     await firebaseAdmin.auth.updateUser(uuid, {
+    await firebaseAdmin.auth.updateUser(uuid, {
       disabled: true,
     });
     return res.status(200).json({ success: "user disabled successfully" });
