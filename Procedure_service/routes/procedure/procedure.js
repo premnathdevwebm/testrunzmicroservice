@@ -46,7 +46,7 @@ router.patch(
   editprocedureById
 );
 router.delete(
-  "/procedure/:id",
+  "/procedure",
   isAuthenticatedProcedure,
   commonRole,
   deleteprocedureById
