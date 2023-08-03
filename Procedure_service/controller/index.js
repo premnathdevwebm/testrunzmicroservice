@@ -31,6 +31,8 @@ const duplicateProcedure = async(req, res)=>{
 
 const listAllProcedureAssociate = async (req, res) => {
   try {
+    const { department, labtype, id, createdBy, createdOn } =
+      req.query;
     const user = await User.findOne({ userId: req.user.userId });
     const ids = user.procedureIds.map(async (ele) => {
       const tempId = ele.toString();
@@ -39,6 +41,10 @@ const listAllProcedureAssociate = async (req, res) => {
     });
     Promise.all(ids)
       .then((data) => {
+        console.log("DATA", data);
+        if(department || labtype || id || createdBy || createdOn){
+          console.log("DATA", data);
+        }
         return res.status(200).json({user, data: [...data]});
       })
       .catch((err) => {
