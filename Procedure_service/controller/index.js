@@ -17,10 +17,19 @@ const createProcedure = async (req, res) => {
 
 const duplicateProcedure = async (req, res) => {
   try {
-    const { id } = req.body;
-    const { title, html, createdBy } = await Procedure.find({ _id: id });
-    const procedure = new Procedure({ title, html, createdBy });
-    await procedure.save();
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: "Invalid input" });
+    }
+    const user = await User.findOne({ userId: req.user.userId });
+    for (const id of ids) {
+      const { title, html, createdBy } = await Procedure.findById(id);
+      const procedure = new Procedure({ title, html, createdBy });
+      const savedProcedure = await procedure.save();
+      user.procedureIds.push(savedProcedure._id);
+    }
+
+    await user.save();
     return res.status(200).send("Duplicate created");
   } catch (err) {
     console.log(err);
