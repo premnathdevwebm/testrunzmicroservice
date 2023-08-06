@@ -53,7 +53,7 @@ const listAllProcedureAssociate = async (req, res) => {
 
     // Check if user is found
     if (!userData) {
-      return res.status(404).json({ });
+      return res.status(200).json({ });
     }
 
     // Check if the user has associated procedures
