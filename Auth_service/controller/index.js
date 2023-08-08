@@ -99,8 +99,6 @@ const updateValueMiddleware = async (req, res, next) => {
     console.log(err.code);
     return res.status(500).json({ error: "Server error. Please try again" });
   }
-
-  //firstuse
 };
 
 const register = async (req, res) => {
