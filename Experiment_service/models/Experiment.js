@@ -32,6 +32,15 @@ const ExperimentSchema = new Schema({
   expresult: {
     type: String,
   },
+  department: {
+    type: String,
+  },
+  labType: {
+    type: String,
+  },
+  createdBy: {
+    type: String,
+  },
   assignTo: [
     {
       userId: String,
