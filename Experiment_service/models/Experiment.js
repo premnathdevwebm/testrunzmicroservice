@@ -32,6 +32,9 @@ const ExperimentSchema = new Schema({
   expresult: {
     type: String,
   },
+  organization:{
+    type: String,
+  },
   department: {
     type: String,
   },

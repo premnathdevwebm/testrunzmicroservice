@@ -30,8 +30,9 @@ const createExperiment = async (req, res) => {
 const listAllExperiments = async (req, res) => {
   try {
     let expUser = await User.findOne({ userId: req.user.userId }).lean();
-    expUser = expUser.experimentIds.map((ele) => ele.toString());
-    return res.status(200).json(expUser);
+    const organization = expUser.organization
+    const result = await Experiment.find({organization})
+    return res.status(200).json(result);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Server error. Please try again" });
