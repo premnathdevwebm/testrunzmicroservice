@@ -60,32 +60,41 @@ eventEmitter.on("userinfo", async (data, callback) => {
 
 eventEmitter.on("adduser", async (data, callback) => {
   try {
-  const sendingData = JSON.stringify({
-    type: "createuser",
-    ...data,
-  });
-  const amqpCtl = await connectMessageQue();
-  amqpCtl.sendToQueue(
-    process.env.RABBIT_MQ_MOREINFO,
-    Buffer.from(sendingData, "utf-8")
-  );yarn 
-  amqpCtl.sendToQueue(
-    process.env.RABBIT_MQ_PROCEDURE,
-    Buffer.from(sendingData, "utf-8")
-  );
-  amqpCtl.sendToQueue(
-    process.env.RABBIT_MQ_EXPERIMENT,
-    Buffer.from(sendingData, "utf-8")
-  );
-  callback(null, "Event handled successfully");
-} catch (error) {
-  callback(error);
-}
+    const sendingData = JSON.stringify({
+      type: "createuser",
+      ...data,
+    });
+    const amqpCtl = await connectMessageQue();
+    amqpCtl.sendToQueue(
+      process.env.RABBIT_MQ_MOREINFO,
+      Buffer.from(sendingData, "utf-8")
+    );
+    yarn;
+    amqpCtl.sendToQueue(
+      process.env.RABBIT_MQ_PROCEDURE,
+      Buffer.from(sendingData, "utf-8")
+    );
+    amqpCtl.sendToQueue(
+      process.env.RABBIT_MQ_EXPERIMENT,
+      Buffer.from(sendingData, "utf-8")
+    );
+    callback(null, "Event handled successfully");
+  } catch (error) {
+    callback(error);
+  }
 });
 
 const validate = async (req, res) => {
-  await emitEvent("userinfo", req.user);
-  res.status(200).json(req.user);
+  try {
+    const result = await emitEvent("userinfo", req.user);
+    if (result === "VALIDATION Event handled successfully") {
+      return res.status(200).json(req.user);
+    } else {
+      return res.status(200).json({});
+    }
+  } catch (err) {
+    return res.status(500).json({ error: "Server error. Please try again" });
+  }
 };
 
 const updateValueMiddleware = async (req, res, next) => {
