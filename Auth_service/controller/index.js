@@ -69,7 +69,6 @@ eventEmitter.on("adduser", async (data, callback) => {
       process.env.RABBIT_MQ_MOREINFO,
       Buffer.from(sendingData, "utf-8")
     );
-    yarn;
     amqpCtl.sendToQueue(
       process.env.RABBIT_MQ_PROCEDURE,
       Buffer.from(sendingData, "utf-8")
@@ -87,7 +86,7 @@ eventEmitter.on("adduser", async (data, callback) => {
 const validate = async (req, res) => {
   try {
     const result = await emitEvent("userinfo", req.user);
-    if (result === "VALIDATION Event handled successfully") {
+    if (result === "Event handled successfully") {
       return res.status(200).json(req.user);
     } else {
       return res.status(200).json({});
@@ -183,7 +182,7 @@ const createUser = async (req, res) => {
         activeStatus,
       });
       await mailing(msg);
-      await emitEvent("adduser", {
+      const result = await emitEvent("adduser", {
         type: "createuser",
         email,
         name,
@@ -198,11 +197,14 @@ const createUser = async (req, res) => {
         organization,
         department,
       });
+      if(result==="Event handled successfully"){
+        return res.status(200).json({
+          success:
+            "Account created successfully. Please check your mail for password.",
+        });
+      }
     }
-    return res.status(200).json({
-      success:
-        "Account created successfully. Please check your mail for password.",
-    });
+    
   } catch (err) {
     if (err.code === "auth/email-already-exists") {
       return res
