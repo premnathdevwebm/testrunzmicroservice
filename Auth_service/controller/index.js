@@ -85,11 +85,11 @@ eventEmitter.on("adduser", async (data, callback) => {
 
 const validate = async (req, res) => {
   try {
-    const result = await emitEvent("userinfo", req.user);
-    if (result === "Event handled successfully") {
-      return res.status(200).json(req.user);
-    } else {
-      return res.status(200).json({});
+    const resultData = await emitEvent("userinfo", req.user);
+    if (resultData === "Event handled successfully") {
+    return res.status(200).json(req.user);
+    }else{
+      return res.status(400).send("Try again later");
     }
   } catch (err) {
     return res.status(500).json({ error: "Server error. Please try again" });
@@ -123,16 +123,20 @@ const register = async (req, res) => {
       password,
     });
     if (newFirebaseUser) {
-      await User.create({
+      const result = await User.create({
         email,
         name,
         firebaseId: newFirebaseUser.uid,
         timeZone,
       });
+      const resultData = await emitEvent("userinfo", result);
+      if (resultData === "Event handled successfully") {
+        return res
+          .status(200)
+          .json({ success: "Account created successfully. Please sign in." });
+      }
     }
-    return res
-      .status(200)
-      .json({ success: "Account created successfully. Please sign in." });
+    return res.status(400).json({ success: "Problem in Creating user." });
   } catch (err) {
     if (err.code === "auth/email-already-exists") {
       return res
@@ -197,14 +201,13 @@ const createUser = async (req, res) => {
         organization,
         department,
       });
-      if(result==="Event handled successfully"){
+      if (result === "Event handled successfully") {
         return res.status(200).json({
           success:
             "Account created successfully. Please check your mail for password.",
         });
       }
     }
-    
   } catch (err) {
     if (err.code === "auth/email-already-exists") {
       return res
@@ -235,10 +238,15 @@ const firebaseGoogleSignin = async (req, res) => {
   };
   const options = { upsert: true };
   try {
-    await User.updateOne(filter, update, options);
+   await User.updateOne(filter, update, options);
+   const result = await User.findOne(filter)
+   const resultData = await emitEvent("userinfo", result);
+   if (resultData === "Event handled successfully") {
     return res
       .status(200)
       .json({ success: "Google Account logged successfully. Please sign in." });
+   }
+   return res.status(400).json({ success: "Problem in Creating user." });
   } catch (err) {
     console.log(err.code);
     return res.status(500).json({ error: "Server error. Please try again" });
@@ -254,9 +262,14 @@ const firebaseMicrosoftSignin = async (req, res) => {
   const options = { upsert: true };
   try {
     await User.updateOne(filter, update, options);
+    const result = await User.findOne(filter)
+   const resultData = await emitEvent("userinfo", result);
+   if (resultData === "Event handled successfully") {
     return res.status(200).json({
       success: "Microsoft Account logged successfully. Please sign in.",
     });
+  }
+  return res.status(400).json({ success: "Problem in Creating user." });
   } catch (err) {
     console.log(err.code);
     return res.status(500).json({ error: "Server error. Please try again" });

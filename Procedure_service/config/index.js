@@ -64,6 +64,7 @@ async function connectMessageQue() {
         console.log("Consumer cancelled by server");
       }
     });
+    
   } catch (err) {
     console.error(err);
   }
