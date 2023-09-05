@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { createClient } = require("redis");
 const amqp = require("amqplib");
-const { InfluxDB } = require("@influxdata/influxdb-client");
+const { InfluxDBClient } = require("@influxdata/influxdb3-client");
 
 const User = require("../models/User");
 
@@ -10,12 +10,11 @@ let channel, connection;
 mongoose.set("strictQuery", false);
 
 async function influxDb() {
-  const token = process.env.INFLUXTOKEN;
-  const org = process.env.INFLUXorg;
-  const bucket = process.env.INFLUXbucket;
-  const client = new InfluxDB({ url: process.env.INFLUXURL, token: token });
+  const token = process.env.INFLUXDB_TOKEN;
+  const database = process.env.INFLUXbucketdatabase;
+  const client = new InfluxDBClient({ host: process.env.INFLUXURL, token: token });
   return new Promise((resolve, reject) => {
-    resolve({ client, org, bucket });
+    resolve({ client, database });
     reject(new Error("Error connecting to InfluxDB"));
   });
 }

@@ -1,10 +1,10 @@
-const { Point } = require("@influxdata/influxdb-client");
+const { Point } = require("@influxdata/influxdb3-client");
 const User = require("../models/User");
 const Chart = require("../models/Chart");
 const { influxDb } = require("../config");
 const createChart = async (req, res) => {
   try {
-    const { client, org, bucket } = await influxDb();
+   /*  const { client, org, bucket } = await influxDb();
     const chart = new Chart({ ...req.body });
     let temp = await chart.save();
     temp = await User.findOneAndUpdate(
@@ -24,7 +24,7 @@ const createChart = async (req, res) => {
       .catch((e) => {
         console.error(e);
         console.log("\\nFinished ERROR");
-      });
+      }); */
     return res.status(200).json(temp);
   } catch (error) {
     console.log(error);
@@ -42,7 +42,7 @@ const listCharts = async (req, res) => {
 };
 const readInflux = async (req, res) => {
   try {
-    const { client, org, bucket } = await influxDb();
+   /*  const { client, org, bucket } = await influxDb();
 
     const queryApi = client.getQueryApi(org);
 
@@ -60,7 +60,7 @@ const readInflux = async (req, res) => {
       complete() {
         console.log("\\nFinished SUCCESS");
       },
-    });
+    }); */
 
     return res.status(200).json({});
   } catch (error) {
