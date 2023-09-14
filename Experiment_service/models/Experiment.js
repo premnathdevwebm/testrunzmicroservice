@@ -20,6 +20,9 @@ const ExperimentSchema = new Schema({
     enum: ["not started", "opened", "completed"],
     default: "opened",
   },
+  table: {
+    type: Schema.Types.Mixed
+  },
   datas: {
     type: String,
   },
