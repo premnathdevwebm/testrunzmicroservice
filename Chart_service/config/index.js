@@ -9,10 +9,12 @@ let channel, connection;
 
 mongoose.set("strictQuery", false);
 
+
 async function influxDb() {
-  const token = process.env.INFLUXDB_TOKEN;
   const database = process.env.INFLUXbucketdatabase;
-  const client = new InfluxDBClient({ host: process.env.INFLUXURL, token: token });
+  const client = new InfluxDBClient({ host: process.env.INFLUXURL, token: process.env.INFLUXTOKEN });
+  const line = `stat,unit=temperature avg=20.5,max=45.0`
+await client.write(line, database)
   return new Promise((resolve, reject) => {
     resolve({ client, database });
     reject(new Error("Error connecting to InfluxDB"));

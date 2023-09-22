@@ -4,24 +4,49 @@ const Chart = require("../models/Chart");
 const { influxDb } = require("../config");
 const WebSocket = require("../index");
 const connectedClients = new Map();
+const intervals = new Map();
 
-const startConnect = async (runzid) => {
+async function writeDataToInflux(client, database, runzid, headers) {
+  /* headers.map(async (ele) => {
+    const point = new Point();
+    const pointTemplate = Object.freeze(
+      point.measurement("stat").tag("unit", ele)
+    );
+
+    const p2 = pointTemplate
+      .floatField("avg", 24.5)
+      .floatField("max", 45.0);
+
+    await client.write(p2, database);
+  });
+  closeConnect(runzid); */
+}
+
+const startConnect = async (runzid, valuesHeaders) => {
   await WebSocket.wssInstancePromise;
   const wss = await WebSocket.wssInstancePromise;
-  wss.on("connection", ws=>{
+  wss.on("connection", async (ws) => {
     connectedClients.set(runzid, ws);
-  })
+    const { client, database } = await influxDb();
+    const intervalId = setInterval(async () => {
+      await writeDataToInflux(client, database, runzid, valuesHeaders);
+    }, 5000);
+    intervals.set(runzid, intervalId);
+  });
 };
 
-const closeConnect = (runzid)=>{
+const closeConnect = (runzid) => {
+  if (intervals.has(runzid)) {
+    clearInterval(intervals.get(runzid));
+    intervals.delete(runzid);
+  }
   connectedClients.delete(runzid);
-}
+};
+
 const createChart = async (req, res, next) => {
   try {
-    const {runzId} = req.body
-    // const { client, database } = await influxDb();
-    await startConnect(runzId);
-    console.log(connectedClients);
+    const { runzId, values } = req.body;
+    await startConnect(runzId, values);
     return res.status(200).json({ message: "Data streaming started" });
   } catch (error) {
     console.log(error);
