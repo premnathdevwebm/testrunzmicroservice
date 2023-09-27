@@ -42,7 +42,7 @@ const startConnect = async (runzid, valuesHeaders) => {
         fluxQuery
       )) {
         const o = tableMeta.toObject(values)
-        console.log(
+        ws.send(
           `${o._time} ${o._measurement} in '${o.location}' (${o.example}): ${o._field}=${o._value}`
         )
       }
