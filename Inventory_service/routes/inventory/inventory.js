@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const multer = require("multer");
 
 const {
   createInventory,
@@ -7,11 +8,17 @@ const {
   getInventory,
   editInventory,
   deleteInventory,
+  uploadimage
 } = require("../../controller");
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 const { isAuthenticatedInventory, commonRole } = require("../../middleware");
 
 const router = new Router();
 
+router.post("/upload", upload.single("image"), uploadimage);
 router.post(
   "/inventory",
   isAuthenticatedInventory,

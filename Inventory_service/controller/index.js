@@ -59,6 +59,22 @@ const deleteInventory = async (req, res) => {
     return res.status(500).json({ error: "Server error. Please try again" });
   }
 };
+const uploadimage = async (req, res) => {
+  try {
+    const file = req.file;
+    const fileBuffer = await sharp(file.buffer)
+      .resize({ height: 1920, width: 1080, fit: "contain" })
+      .toBuffer();
+    const imageName = file.originalname;
+    await uploadFile(fileBuffer, imageName, file.mimetype);
+    const imageUrl = await getObjectSignedUrl(imageName);
+    res.json({ imageUrl });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Server error. Please try again" });
+  }
+};
+
 module.exports = {
   createInventory,
   listInventories,
@@ -66,4 +82,5 @@ module.exports = {
   getInventory,
   editInventory,
   deleteInventory,
+  uploadimage
 };
