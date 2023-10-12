@@ -10,7 +10,7 @@ async function isAuthenticatedInventory(req, res, next) {
       firebaseUser = await firebaseAdmin.auth.verifyIdToken(token);
     }
     if (!firebaseUser) return res.sendStatus(401);
-    const user = await ChartUser.findOne({
+    const user = await User.findOne({
       email: firebaseUser.email,
     });
     const { email, userId, name, role } = user;

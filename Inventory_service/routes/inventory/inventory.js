@@ -3,12 +3,11 @@ const multer = require("multer");
 
 const {
   createInventory,
-  listInventories,
   getInventories,
   getInventory,
   editInventory,
   deleteInventory,
-  uploadimage
+  uploadFileController
 } = require("../../controller");
 
 const storage = multer.memoryStorage();
@@ -18,7 +17,7 @@ const { isAuthenticatedInventory, commonRole } = require("../../middleware");
 
 const router = new Router();
 
-router.post("/upload", upload.single("image"), uploadimage);
+router.post("/upload", upload.single("file"), uploadFileController);
 router.post(
   "/inventory",
   isAuthenticatedInventory,
@@ -31,7 +30,6 @@ router.get(
   commonRole,
   getInventories
 );
-router.get("/inventory", isAuthenticatedInventory, commonRole, listInventories);
 router.get(
   "/inventory/:id",
   isAuthenticatedInventory,
