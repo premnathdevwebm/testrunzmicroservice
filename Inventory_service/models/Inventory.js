@@ -15,9 +15,9 @@ const InventorySchema = new Schema(
     serialNo: String,
     purchasedate: String,
     guarantywaranty: String,
-    organisation: String,
-    department: String,
-    laboratory: String,
+    organisation: Schema.Types.Mixed,
+    department: Schema.Types.Mixed,
+    laboratory: Schema.Types.Mixed,
     status: { type: Number, default: 0 },
     availability: { type: Number, default: 0 },
     usagehistory: [Date]
